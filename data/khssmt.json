@@ -1,0 +1,27 @@
+[
+  {
+    "semester": "1",
+    "sks": 20,
+    "ips": 3.3
+  },
+  {
+    "semester": "2",
+    "sks": 22,
+    "ips": 3.23
+  },
+  {
+    "semester": "3",
+    "sks": 23,
+    "ips": 3.57
+  },
+  {
+    "semester": "4",
+    "sks": 19,
+    "ips": 3.21
+  },
+  {
+    "semester": "5",
+    "sks": 18,
+    "ips": 3.72
+  }
+]

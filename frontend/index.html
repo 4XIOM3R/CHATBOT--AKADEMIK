@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Assistant AI | UTY</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- AUTH SECTION -->
+        <div id="auth-section" class="glass-card">
+            <h1>SIA Assistant AI</h1>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Silakan login ke akun Assistant Anda.</p>
+            <input type="email" id="login-email" placeholder="Email (misal: mhs@uty.ac.id)">
+            <input type="password" id="login-pass" placeholder="Password">
+            <button onclick="login()">Masuk</button>
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                Belum punya akun? <a href="#" onclick="toggleAuth()" style="color: var(--primary);">Daftar</a>
+            </p>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboard">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>Dashboard Akademik</h1>
+                <button onclick="logout()" style="width: auto; padding: 0.5rem 1rem; background: rgba(255,0,0,0.2);">Keluar</button>
+            </div>
+
+            <div class="grid">
+                <div class="stat-card glass-card">
+                    <span style="color: var(--text-muted);">IPK Terakhir</span>
+                    <h2 id="val-ipk" style="font-size: 2rem; margin-top: 0.5rem;">0.00</h2>
+                </div>
+                <div class="stat-card glass-card">
+                    <span style="color: var(--text-muted);">SKS Selesai</span>
+                    <h2 id="val-sks" style="font-size: 2rem; margin-top: 0.5rem;">0</h2>
+                </div>
+                <div class="stat-card glass-card">
+                    <span style="color: var(--text-muted);">Status Pembayaran</span>
+                    <h2 id="val-pay" style="font-size: 1.2rem; margin-top: 0.5rem; color: #10b981;">LANCAR</h2>
+                </div>
+            </div>
+
+            <div class="glass-card" style="margin-bottom: 2rem;">
+                <h3>Kartu Hasil Studi (KHS)</h3>
+                <div style="overflow-x: auto;">
+                    <table id="khs-table">
+                        <thead>
+                            <tr>
+                                <th>Semester</th>
+                                <th>Kode</th>
+                                <th>Mata Kuliah</th>
+                                <th>SKS</th>
+                                <th>Nilai</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chat-toggle" onclick="toggleChat()">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.5 8.5 0 0 1 8.5 7.9z"></path>
+        </svg>
+    </div>
+
+    <div id="chat-widget" class="glass-card">
+        <div class="chat-header">
+            <strong>Asisten AI UTY</strong>
+            <span onclick="toggleChat()" style="cursor: pointer;">&times;</span>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="message ai-msg">Halo! Ada yang bisa saya bantu terkait data akademik Anda?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chat-msg" placeholder="Tanya sesuatu..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()">Kirim</button>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

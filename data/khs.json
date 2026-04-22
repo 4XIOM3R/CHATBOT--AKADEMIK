@@ -1,0 +1,376 @@
+{
+  "ipk": 3.4,
+  "total_sks": 102,
+  "data": [
+    {
+      "kode": "203108-23",
+      "mata_kuliah": "Algoritma & Dasar Pemrograman",
+      "sks": 3,
+      "semester": "1",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203109-23",
+      "mata_kuliah": "Algoritma & Dasar Pemrograman Praktik",
+      "sks": 2,
+      "semester": "1",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203101-23",
+      "mata_kuliah": "Basic English for Academic Purposes",
+      "sks": 2,
+      "semester": "1",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203107-23",
+      "mata_kuliah": "Kalkulus 1",
+      "sks": 3,
+      "semester": "1",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203103-23",
+      "mata_kuliah": "Logika Informatika",
+      "sks": 2,
+      "semester": "1",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203106-23",
+      "mata_kuliah": "Pengantar Teknologi Informasi",
+      "sks": 2,
+      "semester": "1",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203102-23",
+      "mata_kuliah": "Pengembangan Kepribadian",
+      "sks": 2,
+      "semester": "1",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203104-23",
+      "mata_kuliah": "Pengembangan Web & Mobile",
+      "sks": 2,
+      "semester": "1",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203105-23",
+      "mata_kuliah": "Teknologi Berbasis Objek",
+      "sks": 2,
+      "semester": "1",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203209-23",
+      "mata_kuliah": "Aljabar Linier",
+      "sks": 3,
+      "semester": "2",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203205-23",
+      "mata_kuliah": "Arsitektur & Organisasi Komputer",
+      "sks": 3,
+      "semester": "2",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203210-23",
+      "mata_kuliah": "Bahasa Indonesia",
+      "sks": 2,
+      "semester": "2",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203201-23",
+      "mata_kuliah": "English for Daily Conversation",
+      "sks": 2,
+      "semester": "2",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203204-23",
+      "mata_kuliah": "Kalkulus 2",
+      "sks": 3,
+      "semester": "2",
+      "nilai": "C",
+      "bobot": 2.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203401-23",
+      "mata_kuliah": "Pancasila",
+      "sks": 2,
+      "semester": "2",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203206-23",
+      "mata_kuliah": "Statistik & Probabilitas",
+      "sks": 3,
+      "semester": "2",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203207-23",
+      "mata_kuliah": "Struktur Data",
+      "sks": 3,
+      "semester": "2",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 12.0
+    },
+    {
+      "kode": "203208-23",
+      "mata_kuliah": "Struktur Data Praktik",
+      "sks": 1,
+      "semester": "2",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 4.0
+    },
+    {
+      "kode": "203501-23",
+      "mata_kuliah": "Agama Islam",
+      "sks": 2,
+      "semester": "3",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203304-23",
+      "mata_kuliah": "Basis data",
+      "sks": 3,
+      "semester": "3",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 12.0
+    },
+    {
+      "kode": "203303-23",
+      "mata_kuliah": "Kecerdasan Buatan",
+      "sks": 3,
+      "semester": "3",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 12.0
+    },
+    {
+      "kode": "203308-23",
+      "mata_kuliah": "Pemrograman Berorientasi Objek Praktik",
+      "sks": 2,
+      "semester": "3",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203306-23",
+      "mata_kuliah": "Pemrograman Web",
+      "sks": 2,
+      "semester": "3",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203305-23",
+      "mata_kuliah": "Pemrograman Web Praktik",
+      "sks": 2,
+      "semester": "3",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203302-23",
+      "mata_kuliah": "Pengantar Analisis Data",
+      "sks": 3,
+      "semester": "3",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 12.0
+    },
+    {
+      "kode": "203307-23",
+      "mata_kuliah": "Pengantar Sistem Digital",
+      "sks": 3,
+      "semester": "3",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203301-23",
+      "mata_kuliah": "Sistem Operasi",
+      "sks": 3,
+      "semester": "3",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203406-23",
+      "mata_kuliah": "Bahasa & Otomata",
+      "sks": 3,
+      "semester": "4",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203402-23",
+      "mata_kuliah": "Basis Data Praktik",
+      "sks": 2,
+      "semester": "4",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203403-23",
+      "mata_kuliah": "Jaringan Komputer & Komunikasi Data",
+      "sks": 3,
+      "semester": "4",
+      "nilai": "C",
+      "bobot": 2.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203404-23",
+      "mata_kuliah": "Jaringan Komputer & Komunikasi Data Praktik",
+      "sks": 2,
+      "semester": "4",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203405-23",
+      "mata_kuliah": "Machine Learning",
+      "sks": 3,
+      "semester": "4",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 12.0
+    },
+    {
+      "kode": "203408-23",
+      "mata_kuliah": "Matematika Diskrit",
+      "sks": 3,
+      "semester": "4",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203407-23",
+      "mata_kuliah": "Rekayasa Perangkat Lunak",
+      "sks": 3,
+      "semester": "4",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203507-23",
+      "mata_kuliah": "Bisnis Digital",
+      "sks": 2,
+      "semester": "5",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 6.0
+    },
+    {
+      "kode": "203509-23",
+      "mata_kuliah": "Desain Front-end",
+      "sks": 3,
+      "semester": "5",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 12.0
+    },
+    {
+      "kode": "203513-23",
+      "mata_kuliah": "Jaringan Syaraf tiruan (SCR)",
+      "sks": 3,
+      "semester": "5",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 12.0
+    },
+    {
+      "kode": "203508-23",
+      "mata_kuliah": "Metodologi Penelitian",
+      "sks": 2,
+      "semester": "5",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    },
+    {
+      "kode": "203510-23",
+      "mata_kuliah": "Pengantar Big Data",
+      "sks": 3,
+      "semester": "5",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 12.0
+    },
+    {
+      "kode": "203511-23",
+      "mata_kuliah": "Pengolahan Citra Digital (SCR)",
+      "sks": 3,
+      "semester": "5",
+      "nilai": "B",
+      "bobot": 3.0,
+      "total": 9.0
+    },
+    {
+      "kode": "203512-23",
+      "mata_kuliah": "Pengolahan Citra Digital Praktik",
+      "sks": 2,
+      "semester": "5",
+      "nilai": "A",
+      "bobot": 4.0,
+      "total": 8.0
+    }
+  ],
+  "expired_at": "2026-05-20T23:41:54.983711"
+}
