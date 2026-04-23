@@ -1,61 +1,64 @@
+import logging
 from db.session import SessionLocal
 from db.models import Absen, Course
 
+logger = logging.getLogger(__name__)
 
 def get_or_create_course(db, kode: str, nama: str):
-    course = db.query(Course).filter(Course.code == kode).first()
+    course = db.query(Course).filter(Course.kode == kode).first()
+
     if course:
+        if nama and nama != "Unknown":
+            course.name = nama
         return course
 
-    course = Course(code=kode, name=nama)
+    course = Course(kode=kode, name=nama)
     db.add(course)
-    db.flush()  # biar dapat id
+    db.flush()
     return course
 
 
-def run_absen_pipeline(user_id: str, absen_json: list[dict]):
+def run_absen_pipeline(user_id, absen_json):
     db = SessionLocal()
 
     try:
-        # 🔥 hapus data lama user
         db.query(Absen).filter(Absen.user_id == user_id).delete()
 
         for item in absen_json:
-            # UTY Absen logic: Ambil kode dari nama jika tidak ada
             nama_mk = item.get("mata_kuliah", "Unknown")
-            kode_mk = item.get("kode", nama_mk.split()[0] if " " in nama_mk else nama_mk)
-
-            course = get_or_create_course(
-                db,
-                kode=kode_mk,
-                nama=nama_mk,
+            kode_mk = item.get(
+                "kode",
+                nama_mk.split()[0] if " " in nama_mk else nama_mk
             )
 
-            # Hitung rekap dari pertemuan
+            course = get_or_create_course(db, kode_mk, nama_mk)
             pertemuan = item.get("pertemuan", {})
-            h = 0
-            i = 0
-            a = 0
-            for status in pertemuan.values():
-                if status == "H": h += 1
-                elif status == "I" or status == "S": i += 1
-                elif status == "A": a += 1
 
-            absen = Absen(
+            h, i, a = 0, 0, 0
+            for status in pertemuan.values():
+                status = str(status).upper()
+                if status == "H":
+                    h += 1
+                elif status in ["I", "S"]:
+                    i += 1
+                elif status == "A":
+                    a += 1
+
+            db.add(Absen(
                 user_id=user_id,
                 course_id=course.id,
                 hadir=h,
                 izin=i,
                 alpha=a,
-            )
-            db.add(absen)
-
+            ))
 
         db.commit()
+        logger.info(f"✅ Absen Pipeline success for user {user_id}")
 
-    except Exception:
+    except Exception as e:
         db.rollback()
+        logger.error(f"❌ ERROR Absen Pipeline: {str(e)}")
         raise
 
     finally:
-        db.close()
+        db.close()

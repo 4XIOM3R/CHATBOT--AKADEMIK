@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
 from db.session import Base
 import uuid
-from datetime import datetime
 
 # =====================
 # USER
@@ -13,7 +13,7 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, index=True)
     password = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 # =====================
@@ -23,9 +23,8 @@ class Course(Base):
     __tablename__ = "courses"
 
     id = Column(Integer, primary_key=True, index=True)
-    kode = Column(String)
+    kode = Column(String, unique=True)
     name = Column(String)
-    sks = Column(Integer)
     sks = Column(Integer)
 
 
@@ -36,7 +35,7 @@ class KHS(Base):
     __tablename__ = "khs"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(UUID(as_uuid=True), index=True)  # ✅ UUID
+    user_id = Column(UUID(as_uuid=True), index=True)
     course_id = Column(Integer)
     semester = Column(Integer)
     grade = Column(String)
@@ -69,4 +68,5 @@ class Pembayaran(Base):
     jenis = Column(String)
     tahun_ajaran = Column(String)
     semester = Column(String)
-    tagihan = Column(String)  # string karena ada 'Rp.' dari scraper
+    tagihan = Column(Float)  # Changed to Float for better calculation
+
