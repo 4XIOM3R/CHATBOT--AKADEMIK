@@ -10,10 +10,12 @@ from endpoints.absen import fetch_absen
 from services.sync_kartu_ujian import sync_kartu_ujian
 from endpoints.pembayaran import fetch_pembayaran
 from utils.generate_khssmt import generate_khssmt
-from db.session import engine, Base
+from db.session import engine, Base, SessionLocal
+from db.models import User
 from pipelines.khs_pipeline import run_khs_pipeline
 from pipelines.absen_pipeline import run_absen_pipeline
 from pipelines.pembayaran_pipeline import run_pembayaran_pipeline
+from config import NPM, PASSWORD_SIA
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -24,6 +26,18 @@ logger = logging.getLogger(__name__)
 # =========================
 Base.metadata.create_all(bind=engine)
 
+# Default user_id untuk manual scraping
+TEST_USER_ID = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
+# Pastikan User Test ada di DB
+db = SessionLocal()
+user = db.query(User).filter(User.id == TEST_USER_ID).first()
+if not user:
+    logger.info(f"🆕 Creating test user: {TEST_USER_ID}")
+    db.add(User(id=TEST_USER_ID, email="test@example.com", password="hashed_password"))
+    db.commit()
+db.close()
+
 # =========================
 # INIT BROWSER
 # =========================
@@ -32,10 +46,7 @@ driver = init_browser()
 # =========================
 # LOGIN
 # =========================
-login(driver)
-
-# Default user_id untuk manual scraping
-TEST_USER_ID = uuid.UUID("11111111-1111-1111-1111-111111111111")
+login(driver, username=NPM, password=PASSWORD_SIA)
 
 # =========================
 # KHS
@@ -107,4 +118,4 @@ logger.info("✅ INSERT DB DONE")
 # DONE
 # =========================
 driver.quit()
-logger.info("🚀 SEMUA SELESAI")
+logger.info("🚀 SEMUA SELESAI")

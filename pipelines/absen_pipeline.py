@@ -26,10 +26,8 @@ def run_absen_pipeline(user_id, absen_json):
 
         for item in absen_json:
             nama_mk = item.get("mata_kuliah", "Unknown")
-            kode_mk = item.get(
-                "kode",
-                nama_mk.split()[0] if " " in nama_mk else nama_mk
-            )
+            # Jika kode tidak ada, gunakan nama matakuliah sebagai kode (lebih aman daripada split kata pertama)
+            kode_mk = item.get("kode", nama_mk)
 
             course = get_or_create_course(db, kode_mk, nama_mk)
             pertemuan = item.get("pertemuan", {})

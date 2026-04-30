@@ -25,6 +25,31 @@ async function login() {
     }
 }
 
+async function siaLogin() {
+    const status = document.getElementById("sia-login-status");
+    status.style.display = "block";
+    status.innerText = "⏳ Membuka browser... Silakan login di jendela yang muncul.";
+
+    try {
+        const res = await fetch("/auth/sia-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            status.innerText = "✅ Login & Sinkronisasi Berhasil!";
+            localStorage.setItem("token", data.access_token);
+            checkAuth();
+        } else {
+            throw new Error(data.detail || "Gagal login via SIA");
+        }
+    } catch (err) {
+        status.innerText = "❌ Error: " + err.message;
+        status.style.color = "#ef4444";
+    }
+}
+
 function toggleAuth() {
     isLoginMode = !isLoginMode;
     const title = document.querySelector("#auth-section h1");
@@ -61,32 +86,110 @@ function checkAuth() {
 async function loadDashboard() {
     const headers = { "Authorization": `Bearer ${token}` };
 
-    // Load IPK
-    const resIpk = await fetch("/academic/ipk", { headers });
-    const dataIpk = await resIpk.json();
-    document.getElementById("val-ipk").innerText = dataIpk.ipk || "0.00";
+    try {
+        // Load IPK
+        const resIpk = await fetch("/academic/ipk", { headers });
+        const dataIpk = await resIpk.json();
+        document.getElementById("val-ipk").innerText = dataIpk.ipk || "0.00";
 
-    // Load KHS
-    const resKhs = await fetch("/academic/khs", { headers });
-    const dataKhs = await resKhs.json();
+        // Load KHS
+        const resKhs = await fetch("/academic/khs", { headers });
+        const dataKhs = await resKhs.json();
+        
+        const tbodyKhs = document.querySelector("#khs-table tbody");
+        tbodyKhs.innerHTML = "";
+        let totalSks = 0;
+        dataKhs.forEach(item => {
+            totalSks += item.sks;
+            tbodyKhs.innerHTML += `<tr>
+                <td>${item.semester}</td>
+                <td>${item.kode}</td>
+                <td>${item.mata_kuliah}</td>
+                <td>${item.sks}</td>
+                <td>${item.nilai}</td>
+            </tr>`;
+        });
+        document.getElementById("val-sks").innerText = totalSks;
+
+        // Load Absen
+        const resAbsen = await fetch("/academic/absen", { headers });
+        const dataAbsen = await resAbsen.json();
+        const tbodyAbsen = document.querySelector("#absen-table tbody");
+        tbodyAbsen.innerHTML = "";
+        dataAbsen.forEach(item => {
+            tbodyAbsen.innerHTML += `<tr>
+                <td>${item.mata_kuliah}</td>
+                <td>${item.hadir}</td>
+                <td>${item.izin}</td>
+                <td>${item.alpha}</td>
+            </tr>`;
+        });
+
+        // Load Pembayaran
+        const resPay = await fetch("/academic/pembayaran", { headers });
+        const dataPay = await resPay.json();
+        const tbodyPay = document.querySelector("#pay-table tbody");
+        tbodyPay.innerHTML = "";
+        let totalTagihan = 0;
+        dataPay.forEach(item => {
+            totalTagihan += item.tagihan;
+            tbodyPay.innerHTML += `<tr>
+                <td>${item.jenis}</td>
+                <td>${item.semester}</td>
+                <td>Rp ${item.tagihan.toLocaleString('id-ID')}</td>
+            </tr>`;
+        });
+
+        const payStatus = document.getElementById("val-pay");
+        if (totalTagihan > 0) {
+            payStatus.innerText = "TAGIHAN: Rp " + totalTagihan.toLocaleString('id-ID');
+            payStatus.style.color = "#ef4444";
+        } else {
+            payStatus.innerText = "LANCAR";
+            payStatus.style.color = "#10b981";
+        }
+
+    } catch (err) {
+        console.error("Gagal memuat dashboard:", err);
+    }
+}
+
+async function syncData() {
+    const btn = document.getElementById("btn-sync");
+    const status = document.getElementById("sync-status");
     
-    const tbody = document.querySelector("#khs-table tbody");
-    tbody.innerHTML = "";
-    
-    let totalSks = 0;
-    dataKhs.forEach(item => {
-        totalSks += item.sks;
-        const tr = `<tr>
-            <td>${item.semester}</td>
-            <td>${item.kode}</td>
-            <td>${item.mata_kuliah}</td>
-            <td>${item.sks}</td>
-            <td>${item.nilai}</td>
-        </tr>`;
-        tbody.innerHTML += tr;
-    });
-    
-    document.getElementById("val-sks").innerText = totalSks;
+    btn.disabled = true;
+    status.style.display = "block";
+    status.innerText = "⏳ Sedang sinkronisasi... Silakan login di jendela browser yang terbuka.";
+
+    try {
+        const res = await fetch("/sync/sync", {
+            method: "POST",
+            headers: { 
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            status.style.background = "rgba(16, 185, 129, 0.1)";
+            status.style.borderColor = "#10b981";
+            status.style.color = "#10b981";
+            status.innerText = "✅ Sinkronisasi berhasil! Memperbarui data...";
+            await loadDashboard();
+            setTimeout(() => { status.style.display = "none"; }, 3000);
+        } else {
+            throw new Error(data.detail || "Gagal sinkronisasi");
+        }
+    } catch (err) {
+        status.style.background = "rgba(239, 68, 68, 0.1)";
+        status.style.borderColor = "#ef4444";
+        status.style.color = "#ef4444";
+        status.innerText = "❌ Error: " + err.message;
+    } finally {
+        btn.disabled = false;
+    }
 }
 
 function toggleChat() {

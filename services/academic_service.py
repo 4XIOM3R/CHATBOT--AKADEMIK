@@ -1,5 +1,5 @@
 from db.session import SessionLocal
-from db.models import KHS, Course
+from db.models import KHS, Course, Absen, Pembayaran
 from sqlalchemy import func
 
 
@@ -11,6 +11,7 @@ def get_khs_by_user(user_id: str):
                 KHS.semester,
                 Course.kode,
                 Course.name,
+                Course.sks,
                 KHS.grade,
                 KHS.weight,
                 KHS.total,
@@ -24,11 +25,62 @@ def get_khs_by_user(user_id: str):
         return [
             {
                 "semester": row.semester,
-                "kode": row.kode,  # ✅ Fixed typo from row.code to row.kode
+                "kode": row.kode,
                 "mata_kuliah": row.name,
+                "sks": row.sks,
                 "nilai": row.grade,
                 "bobot": row.weight,
                 "total": row.total,
+            }
+            for row in data
+        ]
+    finally:
+        db.close()
+
+
+def get_absen_by_user(user_id: str):
+    db = SessionLocal()
+    try:
+        data = (
+            db.query(
+                Course.name,
+                Absen.hadir,
+                Absen.izin,
+                Absen.alpha
+            )
+            .join(Course, Course.id == Absen.course_id)
+            .filter(Absen.user_id == user_id)
+            .all()
+        )
+
+        return [
+            {
+                "mata_kuliah": row.name,
+                "hadir": row.hadir,
+                "izin": row.izin,
+                "alpha": row.alpha,
+            }
+            for row in data
+        ]
+    finally:
+        db.close()
+
+
+def get_pembayaran_by_user(user_id: str):
+    db = SessionLocal()
+    try:
+        data = (
+            db.query(Pembayaran)
+            .filter(Pembayaran.user_id == user_id)
+            .all()
+        )
+
+        return [
+            {
+                "jenis": row.jenis,
+                "tahun_ajaran": row.tahun_ajaran,
+                "semester": row.semester,
+                "tagihan": row.tagihan,
             }
             for row in data
         ]
@@ -72,4 +124,4 @@ def get_ips_per_semester(user_id: str):
             for row in data
         ]
     finally:
-        db.close()
+        db.close()

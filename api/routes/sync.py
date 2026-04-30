@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 import uuid
 import logging
+from pydantic import BaseModel
+from typing import Optional
 from api.deps import get_current_user
 from services.browser import init_browser
 from services.auth import login
@@ -13,6 +15,10 @@ from pipelines.pembayaran_pipeline import run_pembayaran_pipeline
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+class SyncRequest(BaseModel):
+    npm: Optional[str] = None
+    password: Optional[str] = None
 
 # =========================
 # HELPER (ANTI ERROR)
@@ -27,16 +33,20 @@ def safe_data(res):
 # SYNC ALL DATA
 # =========================
 @router.post("/sync")
-def sync_data(user_id: str = Depends(get_current_user)):
+def sync_data(data: Optional[SyncRequest] = None, user_id: str = Depends(get_current_user)):
     driver = init_browser()
 
     try:
         user_uuid = uuid.UUID(str(user_id))
+        
+        # Ambil kredensial jika ada
+        npm = data.npm if data else None
+        pw = data.password if data else None
 
-        # 🔐 LOGIN
-        # Note: login(driver) currently uses input() which is not suitable for an API
-        # but I will keep it for now as per user's logic, or ideally it should be automated.
-        login(driver)
+        # 🔐 LOGIN (Manual via browser)
+        success = login(driver, username=npm, password=pw)
+        if not success:
+            raise HTTPException(status_code=401, detail="Login SIA gagal atau timeout")
 
         # =====================
         # SCRAPING
@@ -80,4 +90,4 @@ def sync_data(user_id: str = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
     finally:
-        driver.quit()
+        driver.quit()

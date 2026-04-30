@@ -6,7 +6,7 @@ def ask_gemini(prompt: str):
         return "Gemini API Key is not configured. Please add it to your .env file."
     
     genai.configure(api_key=GOOGLE_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-flash-latest')
     
     response = model.generate_content(prompt)
     return response.text

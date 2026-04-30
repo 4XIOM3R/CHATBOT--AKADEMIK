@@ -12,20 +12,43 @@
         <!-- AUTH SECTION -->
         <div id="auth-section" class="glass-card">
             <h1>SIA Assistant AI</h1>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Silakan login ke akun Assistant Anda.</p>
-            <input type="email" id="login-email" placeholder="Email (misal: mhs@uty.ac.id)">
-            <input type="password" id="login-pass" placeholder="Password">
-            <button onclick="login()">Masuk</button>
-            <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
-                Belum punya akun? <a href="#" onclick="toggleAuth()" style="color: var(--primary);">Daftar</a>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Klik tombol di bawah untuk login langsung via SIA UTY secara manual.</p>
+            
+            <div id="sia-login-container">
+                <button onclick="siaLogin()" style="background: var(--primary); margin-bottom: 1rem;">🚀 Masuk via SIA UTY</button>
+                <div id="sia-login-status" style="display: none; font-size: 0.875rem; color: var(--primary); margin-top: 0.5rem;">
+                    ⏳ Membuka browser... Silakan login di jendela yang muncul.
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 1.5rem 0;">
+            
+            <p style="text-align: center; font-size: 0.875rem; color: var(--text-muted); cursor: pointer;" onclick="document.getElementById('manual-login').style.display='block'; this.style.display='none'">
+                Atau gunakan akun asisten manual
             </p>
+
+            <div id="manual-login" style="display: none;">
+                <input type="email" id="login-email" placeholder="Email">
+                <input type="password" id="login-pass" placeholder="Password">
+                <button onclick="login()">Masuk</button>
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                    Belum punya akun? <a href="#" onclick="toggleAuth()" style="color: var(--primary);">Daftar</a>
+                </p>
+            </div>
         </div>
 
         <!-- DASHBOARD SECTION -->
         <div id="dashboard">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h1>Dashboard Akademik</h1>
-                <button onclick="logout()" style="width: auto; padding: 0.5rem 1rem; background: rgba(255,0,0,0.2);">Keluar</button>
+                <div style="display: flex; gap: 1rem;">
+                    <button id="btn-sync" onclick="syncData()" style="width: auto; padding: 0.5rem 1rem; background: var(--primary);">🔄 Sinkronisasi Data</button>
+                    <button onclick="logout()" style="width: auto; padding: 0.5rem 1rem; background: rgba(255,0,0,0.2);">Keluar</button>
+                </div>
+            </div>
+            
+            <div id="sync-status" style="display: none; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary); color: var(--primary); font-size: 0.875rem;">
+                ⏳ Sedang sinkronisasi... Silakan login di jendela browser yang terbuka.
             </div>
 
             <div class="grid">
@@ -58,6 +81,40 @@
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+            </div>
+
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="glass-card">
+                    <h3>Presensi Kuliah</h3>
+                    <div style="overflow-x: auto;">
+                        <table id="absen-table">
+                            <thead>
+                                <tr>
+                                    <th>Mata Kuliah</th>
+                                    <th>Hadir</th>
+                                    <th>Izin</th>
+                                    <th>Alpha</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3>Riwayat Pembayaran</h3>
+                    <div style="overflow-x: auto;">
+                        <table id="pay-table">
+                            <thead>
+                                <tr>
+                                    <th>Jenis</th>
+                                    <th>Semester</th>
+                                    <th>Tagihan</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
