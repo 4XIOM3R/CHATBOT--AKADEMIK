@@ -13,6 +13,7 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, index=True)
     password = Column(String)
+    current_semester = Column(Integer, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -52,6 +53,7 @@ class Absen(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(UUID(as_uuid=True), index=True)
     course_id = Column(Integer)
+    semester = Column(Integer, nullable=True)
     hadir = Column(Integer, default=0)
     izin = Column(Integer, default=0)
     alpha = Column(Integer, default=0)
@@ -67,6 +69,5 @@ class Pembayaran(Base):
     user_id = Column(UUID(as_uuid=True), index=True)
     jenis = Column(String)
     tahun_ajaran = Column(String)
-    semester = Column(String)
+    semester = Column(Integer)
     tagihan = Column(Float)  # Changed to Float for better calculation
-

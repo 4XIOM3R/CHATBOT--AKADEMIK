@@ -3,141 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Assistant AI | UTY</title>
+    <title>SIA Assistant - Academic AI</title>
     <link rel="stylesheet" href="/static/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <!-- AUTH SECTION -->
-        <div id="auth-section" class="glass-card">
-            <h1>SIA Assistant AI</h1>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Klik tombol di bawah untuk login langsung via SIA UTY secara manual.</p>
-            
-            <div id="sia-login-container">
-                <button onclick="siaLogin()" style="background: var(--primary); margin-bottom: 1rem;">🚀 Masuk via SIA UTY</button>
-                <div id="sia-login-status" style="display: none; font-size: 0.875rem; color: var(--primary); margin-top: 0.5rem;">
-                    ⏳ Membuka browser... Silakan login di jendela yang muncul.
+    <!-- LOGIN PAGE (Public) -->
+    <div id="login-page" class="login-page">
+        <div class="login-container">
+            <div class="login-content">
+                <div class="login-header">
+                    <h1>SIA Assistant</h1>
+                    <p>Asisten AI Akademik untuk Universitas Teknologi Yogyakarta</p>
+                </div>
+
+                <div class="login-buttons">
+                    <button class="btn-login" onclick="goToLogin()">Log in</button>
+                    <button class="btn-public" onclick="startPublicChat()">Tanya Knowledge Base</button>
+                </div>
+
+                <div class="login-info">
+                    <h3>Fitur Tersedia:</h3>
+                    <div class="features">
+                        <div class="feature">
+                            <span class="feature-icon">🔓</span>
+                            <div>
+                                <strong>Akses Publik</strong>
+                                <p>Tanya tentang pedoman akademik, biaya, dan prestasi kampus</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🔐</span>
+                            <div>
+                                <strong>Akses Pribadi (Login)</strong>
+                                <p>Lihat nilai, absensi, dan tagihan Anda secara pribadi</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 1.5rem 0;">
-            
-            <p style="text-align: center; font-size: 0.875rem; color: var(--text-muted); cursor: pointer;" onclick="document.getElementById('manual-login').style.display='block'; this.style.display='none'">
-                Atau gunakan akun asisten manual
-            </p>
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content login-modal-content">
+            <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+            <h2>Masuk</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Pilih metode login:</p>
 
-            <div id="manual-login" style="display: none;">
+            <button class="btn-method" onclick="siaLogin()" style="margin-bottom: 1rem;">
+                <span>🔑</span> Login via SIA UTY
+            </button>
+
+            <div class="divider">atau</div>
+
+            <div id="manual-login-section">
                 <input type="email" id="login-email" placeholder="Email">
                 <input type="password" id="login-pass" placeholder="Password">
-                <button onclick="login()">Masuk</button>
-                <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
-                    Belum punya akun? <a href="#" onclick="toggleAuth()" style="color: var(--primary);">Daftar</a>
-                </p>
-            </div>
-        </div>
-
-        <!-- DASHBOARD SECTION -->
-        <div id="dashboard">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h1>Dashboard Akademik</h1>
-                <div style="display: flex; gap: 1rem;">
-                    <button id="btn-sync" onclick="syncData()" style="width: auto; padding: 0.5rem 1rem; background: var(--primary);">🔄 Sinkronisasi Data</button>
-                    <button onclick="logout()" style="width: auto; padding: 0.5rem 1rem; background: rgba(255,0,0,0.2);">Keluar</button>
-                </div>
-            </div>
-            
-            <div id="sync-status" style="display: none; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary); color: var(--primary); font-size: 0.875rem;">
-                ⏳ Sedang sinkronisasi... Silakan login di jendela browser yang terbuka.
+                <button class="btn-primary" onclick="manualLogin()">Masuk</button>
             </div>
 
-            <div class="grid">
-                <div class="stat-card glass-card">
-                    <span style="color: var(--text-muted);">IPK Terakhir</span>
-                    <h2 id="val-ipk" style="font-size: 2rem; margin-top: 0.5rem;">0.00</h2>
-                </div>
-                <div class="stat-card glass-card">
-                    <span style="color: var(--text-muted);">SKS Selesai</span>
-                    <h2 id="val-sks" style="font-size: 2rem; margin-top: 0.5rem;">0</h2>
-                </div>
-                <div class="stat-card glass-card">
-                    <span style="color: var(--text-muted);">Status Pembayaran</span>
-                    <h2 id="val-pay" style="font-size: 1.2rem; margin-top: 0.5rem; color: #10b981;">LANCAR</h2>
-                </div>
-            </div>
-
-            <div class="glass-card" style="margin-bottom: 2rem;">
-                <h3>Kartu Hasil Studi (KHS)</h3>
-                <div style="overflow-x: auto;">
-                    <table id="khs-table">
-                        <thead>
-                            <tr>
-                                <th>Semester</th>
-                                <th>Kode</th>
-                                <th>Mata Kuliah</th>
-                                <th>SKS</th>
-                                <th>Nilai</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
-                <div class="glass-card">
-                    <h3>Presensi Kuliah</h3>
-                    <div style="overflow-x: auto;">
-                        <table id="absen-table">
-                            <thead>
-                                <tr>
-                                    <th>Mata Kuliah</th>
-                                    <th>Hadir</th>
-                                    <th>Izin</th>
-                                    <th>Alpha</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="glass-card">
-                    <h3>Riwayat Pembayaran</h3>
-                    <div style="overflow-x: auto;">
-                        <table id="pay-table">
-                            <thead>
-                                <tr>
-                                    <th>Jenis</th>
-                                    <th>Semester</th>
-                                    <th>Tagihan</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <div id="sia-login-status" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary); color: var(--primary); font-size: 0.875rem;"></div>
         </div>
     </div>
 
-    <!-- CHATBOT -->
-    <div id="chat-toggle" onclick="toggleChat()">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.5 8.5 0 0 1 8.5 7.9z"></path>
-        </svg>
+    <!-- MAIN APPLICATION (After Login) -->
+    <div id="app-container" class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mini">S</div>
+                <div>
+                    <div class="user-name" id="user-name">User</div>
+                    <div class="user-role" id="user-role">Mahasiswa</div>
+                </div>
+            </div>
+
+            <button class="btn-new-chat" onclick="newPrivateChat()">+ New Chat</button>
+
+            <div class="sidebar-section">
+                <h4>Recent Chats</h4>
+                <div id="chat-history" class="chat-history">
+                    <!-- Chat history akan ditambahkan di sini -->
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="btn-sync" onclick="syncData()">📊 Sync Data</button>
+                <button class="btn-logout" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <div class="chat-header">
+                <div class="header-title">
+                    <h2 id="chat-title">Private Chat</h2>
+                    <p id="chat-subtitle">Tanya tentang data akademik Anda</p>
+                </div>
+                <div class="header-actions">
+                    <button onclick="clearChat()" title="Clear Chat">🗑️</button>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-msg">
+                    <strong>Halo!</strong><br>
+                    Saya adalah asisten AI akademik Anda. Anda bisa menanyakan apapun terkait jadwal, nilai, atau peraturan akademik UTY.
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chat-input" placeholder="Ketik pertanyaan Anda di sini..." onkeypress="if(event.key==='Enter') sendMessage()">
+                    <button class="btn-send" onclick="sendMessage()">➤</button>
+                </div>
+                <p class="chat-hint">Tip: Tanya tentang nilai, absensi, tagihan, atau informasi akademik lainnya</p>
+            </div>
+        </main>
     </div>
 
-    <div id="chat-widget" class="glass-card">
-        <div class="chat-header">
-            <strong>Asisten AI UTY</strong>
-            <span onclick="toggleChat()" style="cursor: pointer;">&times;</span>
+    <!-- PUBLIC CHAT AREA -->
+    <div id="public-chat-container" class="public-chat-container">
+        <header class="public-header">
+            <div class="public-header-content">
+                <h1>SIA Assistant - Knowledge Base</h1>
+                <p>Tanya tentang pedoman akademik, biaya, dan prestasi kampus</p>
+            </div>
+            <div class="public-header-buttons">
+                <button class="btn-login-small" onclick="goToLogin()">Log in</button>
+                <button class="btn-close-public" onclick="closePublicChat()">&times;</button>
+            </div>
+        </header>
+
+        <div class="chat-messages" id="public-chat-messages">
+            <div class="message ai-msg">
+                <strong>Selamat datang!</strong><br>
+                Saya adalah asisten AI yang siap membantu Anda menjawab pertanyaan seputar akademik, biaya pendidikan, dan prestasi di Universitas Teknologi Yogyakarta. Silakan tanyakan sesuatu!
+            </div>
         </div>
-        <div class="chat-body" id="chat-body">
-            <div class="message ai-msg">Halo! Ada yang bisa saya bantu terkait data akademik Anda?</div>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="chat-msg" placeholder="Tanya sesuatu..." onkeypress="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()">Kirim</button>
+
+        <div class="chat-input-area">
+            <div class="chat-input-wrapper">
+                <input type="text" id="public-chat-input" placeholder="Tanya tentang akademik, biaya, atau prestasi..." onkeypress="if(event.key==='Enter') sendPublicMessage()">
+                <button class="btn-send" onclick="sendPublicMessage()">➤</button>
+            </div>
         </div>
     </div>
 

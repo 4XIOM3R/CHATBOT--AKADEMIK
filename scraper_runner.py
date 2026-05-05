@@ -33,7 +33,7 @@ TEST_USER_ID = uuid.UUID("11111111-1111-1111-1111-111111111111")
 db = SessionLocal()
 user = db.query(User).filter(User.id == TEST_USER_ID).first()
 if not user:
-    logger.info(f"🆕 Creating test user: {TEST_USER_ID}")
+    logger.info(f" Creating test user: {TEST_USER_ID}")
     db.add(User(id=TEST_USER_ID, email="test@example.com", password="hashed_password"))
     db.commit()
 db.close()
@@ -70,21 +70,27 @@ khssmt = generate_khssmt(khs_result["data"])
 with open("data/khssmt.json", "w", encoding="utf-8") as f:
     json.dump(khssmt, f, indent=2, ensure_ascii=False)
 
-logger.info("📊 KHSSMT GENERATED")
+logger.info(" KHSSMT GENERATED")
 
 # =========================
 # ABSEN
 # =========================
-absen_result = fetch_absen(driver)
+absen_response = fetch_absen(driver)
+absen_result = absen_response.get("data", []) if isinstance(absen_response, dict) else absen_response
+semester_info = absen_response.get("semester_info", None) if isinstance(absen_response, dict) else None
+
 absen_payload = {
     "data": absen_result,
+    "semester_info": semester_info,
     "expired_at": (datetime.now() + timedelta(days=30)).isoformat()
 }
 
 with open("data/absen.json", "w", encoding="utf-8") as f:
     json.dump(absen_payload, f, indent=2, ensure_ascii=False)
 
-logger.info("📅 ABSEN DONE")
+logger.info(" ABSEN DONE")
+if semester_info:
+    logger.info(f" Semester Info: {semester_info}")
 
 # =========================
 # PEMBAYARAN
@@ -97,25 +103,37 @@ with open("data/pembayaran.json", "w", encoding="utf-8") as f:
         "expired_at": (datetime.now() + timedelta(days=30)).isoformat()
     }, f, indent=2, ensure_ascii=False)
 
-logger.info("💰 PEMBAYARAN DONE")
+logger.info("PEMBAYARAN DONE")
 
 # =========================
 # KARTU UJIAN
 # =========================
 sync_kartu_ujian(driver, str(TEST_USER_ID))
-logger.info("🧾 KARTU UJIAN DONE")
+logger.info(" KARTU UJIAN DONE")
 
 # =========================
 # INSERT KE DATABASE
 # =========================
-run_khs_pipeline(user_id=TEST_USER_ID, khs_json=khs_result["data"])
-run_absen_pipeline(user_id=TEST_USER_ID, absen_json=absen_result)
-run_pembayaran_pipeline(user_id=TEST_USER_ID, pembayaran_json=pembayaran["data"])
+db = SessionLocal()
+try:
+    # KHS pipeline PERTAMA (menghitung current_semester)
+    run_khs_pipeline(db=db, user_id=TEST_USER_ID, khs_json=khs_result["data"])
+    
+    # Absen pipeline KEDUA (menggunakan current_semester dari User)
+    run_absen_pipeline(db=db, user_id=TEST_USER_ID, absen_json=absen_response)
+    
+    run_pembayaran_pipeline(db=db, user_id=TEST_USER_ID, pembayaran_json=pembayaran["data"])
+    db.commit()
+    logger.info(" INSERT DB DONE")
+except Exception as e:
+    db.rollback()
+    logger.error(f" FAILED INSERT DB: {str(e)}")
+finally:
+    db.close()
 
-logger.info("✅ INSERT DB DONE")
 
 # =========================
 # DONE
 # =========================
 driver.quit()
-logger.info("🚀 SEMUA SELESAI")
+logger.info(" SEMUA SELESAI")

@@ -1,36 +1,62 @@
-let isLoginMode = true;
+let token = null;
+let currentMode = 'login'; // 'login', 'public', 'private'
 
-async function login() {
-    const email = document.getElementById("login-email").value;
-    const pass = document.getElementById("login-pass").value;
-    const endpoint = isLoginMode ? "/auth/login" : "/auth/register";
-
-    const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password: pass })
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-        if (isLoginMode) {
-            localStorage.setItem("token", data.access_token);
-            checkAuth();
-        } else {
-            alert("Pendaftaran berhasil! Silakan login.");
-            toggleAuth();
-        }
+// ============= INITIALIZATION =============
+function init() {
+    token = localStorage.getItem("token");
+    if (token) {
+        showPrivateChat();
     } else {
-        alert(data.detail || "Terjadi kesalahan");
+        showLoginPage();
     }
 }
 
+// ============= PAGE NAVIGATION =============
+function showLoginPage() {
+    currentMode = 'login';
+    document.getElementById('login-page').style.display = 'flex';
+    document.getElementById('login-modal').style.display = 'none';
+    document.getElementById('app-container').style.display = 'none';
+    document.getElementById('public-chat-container').style.display = 'none';
+}
+
+function showPrivateChat() {
+    currentMode = 'private';
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('login-modal').style.display = 'none';
+    document.getElementById('app-container').style.display = 'flex';
+    document.getElementById('public-chat-container').style.display = 'none';
+}
+
+function startPublicChat() {
+    currentMode = 'public';
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('login-modal').style.display = 'none';
+    document.getElementById('app-container').style.display = 'none';
+    document.getElementById('public-chat-container').style.display = 'flex';
+}
+
+function goToLogin() {
+    document.getElementById('login-modal').style.display = 'flex';
+}
+
+function closeLoginModal() {
+    document.getElementById('login-modal').style.display = 'none';
+}
+
+function closePublicChat() {
+    showLoginPage();
+}
+
+// ============= AUTHENTICATION =============
 async function siaLogin() {
     const status = document.getElementById("sia-login-status");
     status.style.display = "block";
-    status.innerText = "⏳ Membuka browser... Silakan login di jendela yang muncul.";
+    status.innerHTML = "Membuka browser... Silakan login di jendela yang muncul.";
 
     try {
+        status.innerHTML = "Menunggu login via SIA UTY...";
+
         const res = await fetch("/auth/sia-login", {
             method: "POST",
             headers: { "Content-Type": "application/json" }
@@ -38,134 +64,237 @@ async function siaLogin() {
 
         const data = await res.json();
         if (res.ok) {
-            status.innerText = "✅ Login & Sinkronisasi Berhasil!";
-            localStorage.setItem("token", data.access_token);
-            checkAuth();
+            token = data.access_token;
+            localStorage.setItem("token", token);
+            status.innerHTML = "✓ Login berhasil! Mengalihkan...";
+            setTimeout(() => {
+                closeLoginModal();
+                showPrivateChat();
+            }, 1500);
         } else {
             throw new Error(data.detail || "Gagal login via SIA");
         }
     } catch (err) {
-        status.innerText = "❌ Error: " + err.message;
         status.style.color = "#ef4444";
+        status.innerHTML = "❌ Error: " + err.message;
     }
 }
 
-function toggleAuth() {
-    isLoginMode = !isLoginMode;
-    const title = document.querySelector("#auth-section h1");
-    const btn = document.querySelector("#auth-section button");
-    const toggleLink = document.querySelector("#auth-section p a");
+async function manualLogin() {
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-pass").value;
 
-    if (isLoginMode) {
-        title.innerText = "SIA Assistant AI";
-        btn.innerText = "Masuk";
-        toggleLink.innerText = "Daftar";
-    } else {
-        title.innerText = "Daftar Akun Baru";
-        btn.innerText = "Daftar";
-        toggleLink.innerText = "Masuk ke akun";
+    if (!email || !password) {
+        alert("Email dan password harus diisi");
+        return;
     }
-}
-
-
-function logout() {
-    localStorage.removeItem("token");
-    location.reload();
-}
-
-function checkAuth() {
-    token = localStorage.getItem("token");
-    if (token) {
-        document.getElementById("auth-section").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-        document.getElementById("chat-toggle").style.display = "flex";
-        loadDashboard();
-    }
-}
-
-async function loadDashboard() {
-    const headers = { "Authorization": `Bearer ${token}` };
 
     try {
-        // Load IPK
-        const resIpk = await fetch("/academic/ipk", { headers });
-        const dataIpk = await resIpk.json();
-        document.getElementById("val-ipk").innerText = dataIpk.ipk || "0.00";
-
-        // Load KHS
-        const resKhs = await fetch("/academic/khs", { headers });
-        const dataKhs = await resKhs.json();
-        
-        const tbodyKhs = document.querySelector("#khs-table tbody");
-        tbodyKhs.innerHTML = "";
-        let totalSks = 0;
-        dataKhs.forEach(item => {
-            totalSks += item.sks;
-            tbodyKhs.innerHTML += `<tr>
-                <td>${item.semester}</td>
-                <td>${item.kode}</td>
-                <td>${item.mata_kuliah}</td>
-                <td>${item.sks}</td>
-                <td>${item.nilai}</td>
-            </tr>`;
-        });
-        document.getElementById("val-sks").innerText = totalSks;
-
-        // Load Absen
-        const resAbsen = await fetch("/academic/absen", { headers });
-        const dataAbsen = await resAbsen.json();
-        const tbodyAbsen = document.querySelector("#absen-table tbody");
-        tbodyAbsen.innerHTML = "";
-        dataAbsen.forEach(item => {
-            tbodyAbsen.innerHTML += `<tr>
-                <td>${item.mata_kuliah}</td>
-                <td>${item.hadir}</td>
-                <td>${item.izin}</td>
-                <td>${item.alpha}</td>
-            </tr>`;
+        const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
         });
 
-        // Load Pembayaran
-        const resPay = await fetch("/academic/pembayaran", { headers });
-        const dataPay = await resPay.json();
-        const tbodyPay = document.querySelector("#pay-table tbody");
-        tbodyPay.innerHTML = "";
-        let totalTagihan = 0;
-        dataPay.forEach(item => {
-            totalTagihan += item.tagihan;
-            tbodyPay.innerHTML += `<tr>
-                <td>${item.jenis}</td>
-                <td>${item.semester}</td>
-                <td>Rp ${item.tagihan.toLocaleString('id-ID')}</td>
-            </tr>`;
-        });
-
-        const payStatus = document.getElementById("val-pay");
-        if (totalTagihan > 0) {
-            payStatus.innerText = "TAGIHAN: Rp " + totalTagihan.toLocaleString('id-ID');
-            payStatus.style.color = "#ef4444";
+        const data = await res.json();
+        if (res.ok) {
+            token = data.access_token;
+            localStorage.setItem("token", token);
+            closeLoginModal();
+            showPrivateChat();
         } else {
-            payStatus.innerText = "LANCAR";
-            payStatus.style.color = "#10b981";
+            alert(data.detail || "Login gagal");
         }
-
     } catch (err) {
-        console.error("Gagal memuat dashboard:", err);
+        alert("Error: " + err.message);
     }
+}
+
+function logout() {
+    token = null;
+    localStorage.removeItem("token");
+    showLoginPage();
+}
+
+// ============= PRIVATE CHAT (Authenticated) =============
+async function sendMessage() {
+    if (currentMode !== 'private') return;
+
+    const input = document.getElementById("chat-input");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    const chatMessages = document.getElementById("chat-messages");
+
+    // Disable input
+    input.disabled = true;
+    const sendBtn = document.querySelector('.chat-area .btn-send');
+    sendBtn.disabled = true;
+
+    // Add user message
+    chatMessages.innerHTML += `<div class="message user-msg">${escapeHtml(msg)}</div>`;
+    input.value = "";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Typing indicator
+    const typingId = "typing-" + Date.now();
+    chatMessages.innerHTML += `
+        <div class="message ai-msg" id="${typingId}">
+            <div class="typing-container">
+                <div class="typing">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>`;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+        const res = await fetch("/ai/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ message: msg })
+        });
+
+        const data = await res.json();
+        const typingEl = document.getElementById(typingId);
+
+        if (res.ok) {
+            typeWriterEffect(typingEl, data.answer, () => {
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            });
+        } else {
+            typingEl.innerHTML = "❌ Error: " + (data.detail || "Terjadi kesalahan");
+            input.disabled = false;
+            sendBtn.disabled = false;
+        }
+    } catch (err) {
+        const typingEl = document.getElementById(typingId);
+        typingEl.innerHTML = "❌ Koneksi error: " + err.message;
+        input.disabled = false;
+        sendBtn.disabled = false;
+    }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// ============= PUBLIC CHAT (No Authentication) =============
+async function sendPublicMessage() {
+    if (currentMode !== 'public') return;
+
+    const input = document.getElementById("public-chat-input");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    const chatMessages = document.getElementById("public-chat-messages");
+
+    // Disable input
+    input.disabled = true;
+    const sendBtn = document.querySelector('.public-chat-container .btn-send');
+    sendBtn.disabled = true;
+
+    // Add user message
+    chatMessages.innerHTML += `<div class="message user-msg">${escapeHtml(msg)}</div>`;
+    input.value = "";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Typing indicator
+    const typingId = "typing-pub-" + Date.now();
+    chatMessages.innerHTML += `
+        <div class="message ai-msg" id="${typingId}">
+            <div class="typing-container">
+                <div class="typing">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>`;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+        const res = await fetch("/ai/ask", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: msg })
+        });
+
+        const data = await res.json();
+        const typingEl = document.getElementById(typingId);
+
+        if (res.ok) {
+            typeWriterEffect(typingEl, data.answer, () => {
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            });
+        } else {
+            typingEl.innerHTML = "❌ Error: " + (data.detail || "Terjadi kesalahan");
+            input.disabled = false;
+            sendBtn.disabled = false;
+        }
+    } catch (err) {
+        const typingEl = document.getElementById(typingId);
+        typingEl.innerHTML = "❌ Koneksi error: " + err.message;
+        input.disabled = false;
+        sendBtn.disabled = false;
+    }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// ============= UTILITY FUNCTIONS =============
+function typeWriterEffect(element, text, callback) {
+    element.innerHTML = "";
+    let i = 0;
+    const speed = 15;
+
+    function type() {
+        if (i < text.length) {
+            const char = text.charAt(i);
+            if (char === '\n') {
+                element.innerHTML += '<br>';
+            } else {
+                element.innerHTML += char;
+            }
+            i++;
+            document.getElementById(element.id).scrollTop = document.getElementById(element.id).scrollHeight;
+            setTimeout(type, speed);
+        } else {
+            if (callback) callback();
+        }
+    }
+    type();
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 async function syncData() {
-    const btn = document.getElementById("btn-sync");
-    const status = document.getElementById("sync-status");
-    
+    if (!token) return;
+
+    const btn = document.querySelector('.btn-sync');
     btn.disabled = true;
-    status.style.display = "block";
-    status.innerText = "⏳ Sedang sinkronisasi... Silakan login di jendela browser yang terbuka.";
+    btn.textContent = "⏳ Syncing...";
 
     try {
         const res = await fetch("/sync/sync", {
             method: "POST",
-            headers: { 
+            headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             }
@@ -173,65 +302,40 @@ async function syncData() {
 
         const data = await res.json();
         if (res.ok) {
-            status.style.background = "rgba(16, 185, 129, 0.1)";
-            status.style.borderColor = "#10b981";
-            status.style.color = "#10b981";
-            status.innerText = "✅ Sinkronisasi berhasil! Memperbarui data...";
-            await loadDashboard();
-            setTimeout(() => { status.style.display = "none"; }, 3000);
+            alert("✓ Sinkronisasi berhasil!");
         } else {
-            throw new Error(data.detail || "Gagal sinkronisasi");
+            alert("Error: " + (data.detail || "Gagal sinkronisasi"));
         }
     } catch (err) {
-        status.style.background = "rgba(239, 68, 68, 0.1)";
-        status.style.borderColor = "#ef4444";
-        status.style.color = "#ef4444";
-        status.innerText = "❌ Error: " + err.message;
+        alert("Error: " + err.message);
     } finally {
         btn.disabled = false;
+        btn.textContent = "📊 Sync Data";
     }
 }
 
-function toggleChat() {
-    const widget = document.getElementById("chat-widget");
-    widget.style.display = widget.style.display === "flex" ? "none" : "flex";
-}
-
-async function sendMessage() {
-    const input = document.getElementById("chat-msg");
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    const chatBody = document.getElementById("chat-body");
-    
-    // Add user message
-    chatBody.innerHTML += `<div class="message user-msg">${msg}</div>`;
-    input.value = "";
-    chatBody.scrollTop = chatBody.scrollHeight;
-
-    // AI thinking state
-    const thinkingId = "thinking-" + Date.now();
-    chatBody.innerHTML += `<div class="message ai-msg" id="${thinkingId}">...</div>`;
-    chatBody.scrollTop = chatBody.scrollHeight;
-
-    const res = await fetch("/ai/chat", {
-        method: "POST",
-        headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ message: msg })
-    });
-
-    const data = await res.json();
-    const thinkingEl = document.getElementById(thinkingId);
-    if (res.ok) {
-        thinkingEl.innerText = data.answer;
-    } else {
-        thinkingEl.innerText = "Maaf, terjadi kesalahan.";
+function clearChat() {
+    if (currentMode === 'private') {
+        document.getElementById('chat-messages').innerHTML = `
+            <div class="message ai-msg">
+                <strong>Chat cleared.</strong><br>
+                Mulai pertanyaan baru Anda.
+            </div>
+        `;
+    } else if (currentMode === 'public') {
+        document.getElementById('public-chat-messages').innerHTML = `
+            <div class="message ai-msg">
+                <strong>Chat cleared.</strong><br>
+                Silakan tanyakan sesuatu!
+            </div>
+        `;
     }
-    chatBody.scrollTop = chatBody.scrollHeight;
 }
 
-// Init
-checkAuth();
+function newPrivateChat() {
+    clearChat();
+    document.getElementById('chat-input').focus();
+}
+
+// Initialize on load
+window.addEventListener('load', init);

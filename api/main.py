@@ -9,18 +9,18 @@ from api.routes.academic import router as academic_router
 from api.routes.auth import router as auth_router
 from api.routes.ai import router as ai_router
 
-# Initialize database
+# Inisialisasi database
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Chatbot Akademik UTY API")
 
-# Register Routers
+# Daftarkan Routers
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(sync_router, prefix="/sync", tags=["Sync"])
 app.include_router(academic_router, prefix="/academic", tags=["Academic"])
 app.include_router(ai_router, prefix="/ai", tags=["AI"])
 
-# Serving Frontend
+# Melayani Frontend
 if not os.path.exists("frontend"):
     os.makedirs("frontend")
 
